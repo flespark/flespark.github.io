@@ -1,0 +1,4 @@
+baseURL = "https://flespark.com"
+languageCode = "en-us"
+title = "0xa5 home page"
+theme = "ananke"

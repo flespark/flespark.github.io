@@ -31,7 +31,7 @@ jobs:
 
       - name: Deploy static to Tencent CloudBase
         id: deployStatic
-        uses: ./github/actions/cloudbase_action
+        uses: ./github/actions/cloudbase-action
         with:
           secretId: ${{ secrets.SECRET_ID }}
           secretKey: ${{ secrets.SECRET_KEY }}

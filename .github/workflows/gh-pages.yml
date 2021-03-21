@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -33,10 +33,7 @@ jobs:
         id: deployStatic
         uses: TencentCloudBase/cloudbase-action@v1.1.1
         with:
-          # 云开发的访问密钥 secretId 和 secretKey
           secretId: ${{ secrets.SECRET_ID }}
           secretKey: ${{ secrets.SECRET_KEY }}
-          # 云开发的环境id
           envId: ${{ secrets.ENV_ID }}
-          # Github 项目静态文件的路径
           staticSrcPath: public

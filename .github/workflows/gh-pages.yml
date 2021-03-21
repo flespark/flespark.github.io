@@ -29,11 +29,21 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
 
-      - name: Deploy static to Tencent CloudBase
-        id: deployStatic
-        uses: ./.github/actions/cloudbase-action
+#      - name: Deploy static to Tencent CloudBase
+#        id: deployStatic
+#        uses: ./.github/actions/cloudbase-action
+#        with:
+#          secretId: ${{ secrets.SECRET_ID }}
+#          secretKey: ${{ secrets.SECRET_KEY }}
+#          envId: ${{ secrets.ENV_ID }}
+#          staticSrcPath: public
+
+      - name: upload files to OSS
+        uses: fangbinwei/aliyun-oss-website-action@v1
         with:
-          secretId: ${{ secrets.SECRET_ID }}
-          secretKey: ${{ secrets.SECRET_KEY }}
-          envId: ${{ secrets.ENV_ID }}
-          staticSrcPath: public
+          accessKeyId: ${{ secrets.ACCESS_ID }}
+          accessKeySecret: ${{ secrets.ACCESS_KEY }}
+          bucket: webpage-hz.oss-cn-hangzhou.aliyuncs.com
+          # e.g. "oss-cn-shanghai.aliyuncs.com"
+          endpoint: oss-cn-hangzhou.aliyuncs.com
+          folder: public

@@ -43,7 +43,7 @@ jobs:
         with:
           accessKeyId: ${{ secrets.ACCESS_ID }}
           accessKeySecret: ${{ secrets.ACCESS_KEY }}
-          bucket: webpage-hz.oss-cn-hangzhou.aliyuncs.com
+          bucket: webpage-hz
           # e.g. "oss-cn-shanghai.aliyuncs.com"
           endpoint: oss-cn-hangzhou.aliyuncs.com
           folder: public

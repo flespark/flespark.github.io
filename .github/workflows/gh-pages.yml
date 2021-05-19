@@ -38,21 +38,21 @@ jobs:
 #          envId: ${{ secrets.ENV_ID }}
 #          staticSrcPath: public
 
-#     - name: upload files to OSS
-#       uses: fangbinwei/aliyun-oss-website-action@v1
-#       with:
-#         accessKeyId: ${{ secrets.OSS_ACCESS_ID }}
-#         accessKeySecret: ${{ secrets.OSS_ACCESS_KEY }}
-#         bucket: webpage-hz
-#         endpoint: oss-cn-hangzhou.aliyuncs.com
-#         folder: public
-#         skipSetting: true
+      - name: upload files to OSS
+        uses: fangbinwei/aliyun-oss-website-action@v1
+        with:
+          accessKeyId: ${{ secrets.OSS_ACCESS_ID }}
+          accessKeySecret: ${{ secrets.OSS_ACCESS_KEY }}
+          bucket: webpage-hz
+          endpoint: oss-cn-hangzhou.aliyuncs.com
+          folder: public
+          skipSetting: true
 
-      - name: upload files to OSS by cmdl
-			  uses: manyuanrong/setup-ossutil@v2.0
-				with:
-					endpoint: "oss-cn-hangzhou.aliyuncs.com"
-					access-key-id: ${{ secrets.OSS_ACCESS_ID }}
-					access-key-secret: ${{ secrets.OSS_ACCESS_KEY }}
-			  run: |
-        [ $(git branch) == hugo ] && ossutil cp -urf $(git rev-parse --show-toplevel)/public oss://webpage-hz/
+#     - name: upload files to OSS by cmdl
+# 		  uses: manyuanrong/setup-ossutil@v2.0
+# 			with:
+# 				endpoint: "oss-cn-hangzhou.aliyuncs.com"
+# 				access-key-id: ${{ secrets.OSS_ACCESS_ID }}
+# 				access-key-secret: ${{ secrets.OSS_ACCESS_KEY }}
+# 		  run: |
+#       [ $(git branch) == hugo ] && ossutil cp -urf $(git rev-parse --show-toplevel)/public oss://webpage-hz/

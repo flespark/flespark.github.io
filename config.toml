@@ -1,4 +1,5 @@
 baseURL = "https://flespark.com"
-languageCode = "en-us"
+languageCode = "zh-cn"
 title = "0xa5 home page"
 theme = "ananke"
+disableLiveReload = true

@@ -41,9 +41,9 @@ jobs:
       - name: upload files to OSS
         uses: fangbinwei/aliyun-oss-website-action@v1
         with:
-          accessKeyId: ${{ secrets.ACCESS_ID }}
-          accessKeySecret: ${{ secrets.ACCESS_KEY }}
+          accessKeyId: ${{ secrets.OSS_ACCESS_ID }}
+          accessKeySecret: ${{ secrets.OSS_ACCESS_KEY }}
           bucket: webpage-hz
-          endpoint: "https://oss-cn-hangzhou.aliyuncs.com"
+          endpoint: oss-cn-hangzhou.aliyuncs.com
           folder: public
           skipSetting: true

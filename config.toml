@@ -1,5 +1,7 @@
 baseURL = "https://flespark.com"
-languageCode = "zh-cn"
-title = "0xa5 home page"
+copyright = "CC BY-NC-ND 4.0"
+languageCode = "en-us"
+title = "free publish as flee spark"
+defaultContentLanguage = "cn"
 theme = "ananke"
 disableLiveReload = true

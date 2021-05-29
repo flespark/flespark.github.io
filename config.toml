@@ -3,5 +3,7 @@ copyright = "CC BY-NC-ND 4.0"
 languageCode = "en-us"
 title = "free publish as flee spark"
 defaultContentLanguage = "cn"
+summaryLength = 200
+hasCJKLanguage = true
 theme = "ananke"
 disableLiveReload = true

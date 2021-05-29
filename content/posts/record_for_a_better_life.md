@@ -1,5 +1,5 @@
 ---
-title: "白驹过隙，时间淘沙：开篇词"
+title: "record for keep a good feeling"
 date: 2021-05-19T20:11:02+08:00
 draft: false
 tags: essay

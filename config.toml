@@ -1,4 +1,4 @@
-baseURL = "https://flespark.com"
+baseURL = "https://flespark.github.io"
 copyright = "CC BY-NC-ND 4.0"
 languageCode = "en-us"
 title = "free publish as flee spark"
@@ -7,3 +7,4 @@ summaryLength = 200
 hasCJKLanguage = true
 theme = "ananke"
 disableLiveReload = true
+

@@ -3,6 +3,10 @@
   <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="{{ .Site.BaseURL }}" >
     &copy; {{ with .Site.Copyright | default .Site.Title }} {{ . | safeHTML }} {{ now.Format "2006"}} {{ end }}
   </a>
+  {{- if .Site.Params.BeiAn }}
+  <span><a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://beian.miit.gov.cn">
+      {{ .Site.Params.BeiAn }}</a></span>
+  {{- end }}
     <div>{{ partial "social-follow.html" . }}</div>
   </div>
 </footer>

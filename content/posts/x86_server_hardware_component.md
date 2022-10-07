@@ -1,7 +1,7 @@
 ---
 title: "服务器硬件组成和软件控制方法"
 date: 2022-10-07T20:11:02+08:00
-draft: true
+draft: false
 categories: ["development"]
 tags: ["x86", "server","linux"]
 ---

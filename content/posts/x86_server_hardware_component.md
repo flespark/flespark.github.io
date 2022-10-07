@@ -1,6 +1,6 @@
 ---
 title: "服务器硬件组成和软件控制方法"
-date: 2022-07-30T20:11:02+08:00
+date: 2022-10-07T20:11:02+08:00
 draft: true
 categories: ["development"]
 tags: ["x86", "server","linux"]
@@ -10,7 +10,7 @@ tags: ["x86", "server","linux"]
 
 ### 服务器硬件开发的特点
 
-任何服务器的高效稳定运行，都离不开对连接到CPU的外围硬件的有效管理。就好比我们组装电脑的时候，都会优先选择华硕，微星和技嘉的主板，因为他们的主板BIOS的可配置项目非常多，也提供许多辅助超频的功能。x86服务器硬件的功能也是这样，除了整体硬件（CPU，内存和网卡）的匹配保证CPU的性能的释放，也要保证设备有一定的扩展性（网卡，显卡，加密卡，特殊加速卡的支持），较高的稳定行（电源电压和温度，风扇转速的监控，网口bypass和设备指示灯的控制）以及良好的互操作性能（硬件上主要是BMC的支持）。相对于嵌入式开发而言，服务器功能对于硬件的依赖程度相对较低。一是服务器各种行为只会用到CPU的通用计算能力，而嵌入式设备通常要和同环境交互，应对各类媒体计算和信号处理的功能，通常还有低功耗和无线通信的要求，所以CPU演变成了SoC，二是桌面处理器领域一直以来都是intel一家独大的局面，所有围绕桌面CPU的外围硬件也都只能按照intel的规矩来，使用相同的通信和控制方法。三是服务器的硬件功能的迭代要比嵌入式设备慢得多，每一代产品的变化主要是CPU性能和总线吞吐的提升，同步代产品的多个规格又仅在性能高低上有所区别。所以相对于嵌入式面向不同工作场景的功能定制需求，基于intel生态的服务器开发具有面向统一协议和接口，面向高性能以及虚拟化的特点。
+任何服务器的高效稳定运行，都离不开对连接到CPU的外围硬件的有效管理。就好比我们组装电脑的时候，都会优先选择华硕，微星和技嘉的主板，因为他们的主板BIOS的可配置项目非常多，也提供许多辅助超频的功能。x86服务器硬件的功能也是这样，除了整体硬件（CPU，内存和网卡）的匹配保证CPU的性能的释放，也要保证设备有一定的扩展性（网卡，显卡，加密卡，特殊加速卡的支持），较高的稳定行（电源电压和温度，风扇转速的监控，网口bypass和设备指示灯的控制）以及良好的互操作性能（硬件上主要是BMC的支持）。相对于嵌入式开发而言，服务器功能对于硬件的依赖程度相对较低。一是服务器各种行为只会用到CPU的通用计算能力，而嵌入式设备通常要和同环境交互，应对各类媒体计算和信号处理的功能，通常还有低功耗和无线通信的要求，所以CPU演变成了SoC，二是桌面处理器领域一直以来都是intel一家独大的局面，所有围绕桌面CPU的外围硬件也都只能按照[intel的规矩][4]来，使用相同的通信和控制方法。三是服务器的硬件功能的迭代要比嵌入式设备慢得多，每一代产品的变化主要是CPU性能和总线吞吐的提升，同步代产品的多个规格又仅在性能高低上有所区别。所以相对于嵌入式面向不同工作场景的功能定制需求，基于intel生态的服务器开发具有面向统一协议和接口，面向高并发以及虚拟化的特点。
 
 ### x86服务器硬件组成
 
@@ -24,7 +24,8 @@ tags: ["x86", "server","linux"]
 
 ### PCI
 
-PCI总线提供了外围设备与CPU高速通信的能力，是目前的intel的标准总线规范，PCIE是PCI的升级版，物理通信方式从并行改为了串行，增强了中断功能。PCI早已淘汰，目前主板能看到的都是PCIE插槽，PCI和PCIE的软件控制方式没有区别，一般驱动只涉及到PCI的基础功能，所以这里不加区分。CPU通过总线号，设备号，功能号[bus:dev.func]定位每一个PCI设备的功能单元（一个功能单元代表一个最小可独立配置硬件，例如一个4口网卡，每个网口分配一个功能号，设备号是一样的），在Linux上执行lspci列出系统识别到的每一个PCI设备，可以看到大多数PCI设备的总线号都为0，其他不为0的总线通过PCI桥的桥接的设备的总线号根据广度优先遍历的顺序枚举，执行lspci -tv可以列出PCI设备的拓扑树。
+PCI总线提供了外围设备与CPU高速通信的能力，是目前的intel的标准总线规范，PCIE是PCI的升级版，物理通信方式从并行改为了串行，增强了中断功能。PCI早已淘汰，目前主板能看到的都是PCIE插槽，这里只涉及PCI和PCIE通用的基本软件控制方式，所以以下不加区分。CPU通过总线号(8bit数据表示)，设备号(5bit)，功能号（3bit）[bus:dev.func]定位每一个PCI设备的功能单元（一个功能单元代表一个最小可独立配置硬件，例如一个4口网卡，每个网口分配一个功能号，设备号是一样的），在Linux上执行lspci列出系统识别到的每一个PCI设备，可以看到大多数PCI设备的总线号都为0，其他不为0的总线通过PCI桥的桥接的设备的总线号根据[深度优先遍历的顺序枚举][3]，执行lspci -tv可以列出PCI设备的拓扑树。
+
 ```sh
 root@edge-xnet:~/Desktop# lspci
 00:00.0 Host bridge: Intel Corporation Gemini Lake Host Bridge (rev 06)
@@ -114,15 +115,183 @@ uint32_t pciConfigReadWord(uint8_t bus, uint8_t slot, uint8_t func, uint8_t offs
 }
 ```
 
-或者使用lspci或者setpci,pci_debug命令读写PCI配置空间和内存映射寄存器的内容。
+或使用lspci或者[setpci][8],[pci_debug][9]命令读写PCI配置空间和内存映射寄存器的内容。
 
 读写PCI的配置空间首先需要确定设备的PCI地址，但是接在PCI桥上设备的PCI的总线地址不是固定的。常见的PCI桥有2中，一种Host Bridge，一种PCI-to-PCI Bridge，Host Bridge的插槽上的每一个设备的总线号对应Host Bridge一个新的功能号，PCI-to-PCI Bridge的功能号个数是固定的，读取PCI配置空间的Class code可以区分Bridge类型。对于Bridge类型的PCI设备配置空间的Subordinate bus number则保存着次级设备的总线号，PCI插槽在接入新设备时，设备号和功能号都是固定的，通过读取该寄存器中的内容确认新设备的总线号确认新设备的PCI地址。
 
+[PCIE][5]较之PCI地址中多了一个PCI域（segment group number）的部分，设备的配置空间升级到了4096字节的大小，前面的256字节和PCI一样可以通过上面PCI的传统方式访问，但是扩展的部分（包括PCI域不是默认0设备）的寄存器，x86设备通过BIOS传递的ACPI中的MCFG表获取配置空间在内核中的映射地址，其他架构系统则一般通过设备树的方式。
 
+BIOS通过操作配置空间只完成的PCI层面的配置（包括PCI的设备ID，PCI地址，速率，中断号分配），况且系统启动之后这块内容被置为只读。功能层面（对应各种外围设备控制器，例如SMBus控制器，NvMe控制器，MAC芯片）则是通过对多个BAR（Base Address Register）映射位置的内存来完成配置，BAR可以在配置空间获取到，Endpoint设备的配置空间有5个BAR，Bridge设备配置空间只有2个BAR。Linux中内核驱动代码主要配置这部分内存中的数据，但是驱动加载成功之后，PCI与CPU的通信就是走的DMA通道。
 
+PCI总线枚举和设备识别是在BIOS中进行的，B主板IOS配置页面可以找到PCI的速率，中断模式，电源管理的一些基础配置项，有的BIOS固定把部分PCI桥的次级设备设置的固定bus_num。进入Linux系统后，一般通过一个lspci就可以读取大致的的PCI设备工作状态，
 
-![How does cpu communicate with peripherals? - Stack Overflow] https://stackoverflow.com/questions/6852332/how-does-cpu-communicate-with-peripherals
+### SuperIO
+
+[SuperIO][6]多在工控机和低端服务器以及一些x86嵌入式设备上比较常见，是x86在ISA总线架构留下的产物，理应该被淘汰了。而且SuperIO和现代桌面CPU所能提供的功能有一部分的重叠，但是很多低端机上还是有用到SuperIO，一方面作为替代PCH的低成本选项[扩展低速接口控制器和引脚][7]，另一方面在多种产品中使用相同的SuperIO也减少了硬件制版和软件适配上的开销。SuperIO提供的低速总线扩展，包括串口接入，SMBus/I2C接口，温度传感器，风扇转速控制，供电电压监控，看门狗中断，红外信号接收，PS/2键鼠接口等几乎所有的低速总线功能，不同型号所支持的功能和对应接口数量差异也比较大，具体以厂商提供的datasheet位置。以前SuperIO是通过ISA总线与CPU交互数据的，现在多数通过LPC接口与CPU进行通信，但是软件上还是沿用原来直接读写IO端口的控制方式。因为只有x86架构支持IO端口命令，所以几乎也只能在x86平台服务器中找到SuperIO芯片。通过2个映射到特定IO端口的寄存器，读写SuperIO每个对应功能的对应配置寄存器：
+
+- 索引寄存器（大多数芯片映射到0x2E的位置，少部分映射到0x4E）
+
+- 数据寄存器（大多数映射到0x2F位置，少部分映射到0x4F）
+  
+首先往索引寄存器端口写入想要读写寄存器的索引值，然后数据寄存器端口就可以读写到想要的数据。SuperIO读写一个配置寄存器往往需要经过多层索引，首先芯片的每一个功能模块（比如温度传感器1）占据一段IO端口地址段，他们的起始地址可以通过LDN（Logic Device Number）定位，流程如下：
+
+```c
+outb(0x20, index_reg);  //基偏移为0x20位置的寄存器，对应SuperIO的ID
+int id = inb(data_reg); //保存ID，确认芯片型号识别正确
+
+outb(0x07, index_reg);  //基偏移为0x07的寄存器，对应LDN选择寄存器
+outb(0x03, data_reg);   //选择LDN 0x03
+
+out(0x30， index_reg);  //选择LDN偏移为0x30的使能寄存器
+outb(0x01, data_reg);   //使能对应的功能
+```
+
+有的SuperIO控制流程更复杂一些，在写入寄存器之前有固定的entry instruction，并且把多个功能单元合并到一个LDN访问，以下代码示例借助[ioport][10]控制ITE8772E SuperIO的PWM风扇1转速：
+
+```bash
+#!/bin/bash
+
+set -e
+
+# entry instru
+it87_entry() {
+outb 0x2e 0x87
+outb 0x2e 0x01
+outb 0x2e 0x55
+outb 0x2e 0x55
+}
+
+# select LDN
+EU_probe() {
+# select EU(Environment Controller Unit)
+outb 0x2e 0x07
+outb 0x2f 0x04
+
+# read EU activate register
+outb 0x2e 0x30
+tmp=$(inb 0x2f)
+
+if [[ $? -ne 0 ]] || [[ $(( $tmp & 0x01 )) -ne 1 ]]; then
+	printf "IT87 not activited!\n"
+	exit
+fi
+
+# read EU base register address
+outb 0x2e 0x60
+base_addr=$(inb 0x2f)
+base_addr=$(( base_addr << 8 ))
+outb 0x2e 0x61
+base_addr=$(( base_addr | $(inb 0x2f) ))
+echo $base_addr
+}
+
+get_fan_ctl_reg() {
+if (($# < 1)); then
+	echo "not designated base addr in arg"
+	exit 1
+fi
+
+base_addr=$1
+
+# get EU address map in LPC bus
+EU_addr=$(( base_addr + 0x05 ))
+EU_data=$(( base_addr + 0x06 ))
+
+if [[ -n $targetVal ]]; then
+	# set fan1 software control mode
+	outb $EU_addr 0x16
+	outb $EU_data 0
+	# set fan1 PWM duty value(per 256)
+	outb $EU_addr 0x6b
+	outb $EU_data $targetVal
+fi
+outb $EU_addr 0x6b
+fanOutput1=$(inb $EU_data)
+printf "fan1 output 0x%x\n" "$fanOutput1"
+}
+
+# exit instru
+it87_exit() {
+outb 0x2e 0x02
+outb 0x2f 0x02
+}
+
+main() (
+	it87_entry
+	base_addr=`EU_probe`
+if (($# == 1)); then
+	targetVal=$(( $1 & 0xff ))
+fi
+	get_fan_ctl_reg $base_addr
+	
+	it87_exit
+)
+
+main $@
+```
+
+很多SuperIO可以找到对应的内核模块，加载后通过sysfs控制SuperIO寄存器的是一种更规范的行为，下面的守护进程每隔5秒读取一次SuperIO的温度传感器的数据调整风扇的转速：
+
+```bash
+#!/bin/bash
+
+tweak_fan()
+(
+    while true; do
+        sio_temp=$(($(cat temp2_input) / 1000))
+        if ((sio_temp < 45)); then
+            echo 32 > pwm2
+        elif ((sio_temp < 55)); then
+            echo 64 > pwm2
+        elif ((sio_temp < 65)); then
+            echo 128 > pwm2
+        else
+            echo 255 > pwm2
+        fi
+        sleep 5
+    done
+)
+
+main()
+(
+    modprobe it87 || exit -1
+    cd /sys/class/hwmon/hwmon2
+    tweak_fan > /dev/null
+)
+
+main &
+```
+
+想要知道主板上是否有SuperIO芯片，除了打开机箱找到芯片，[lm-sensor][11]提供的sensors-detect工具多数情况下也可以正确识别。对于一些后期推出不太流行的SuperIO芯片，sensors-detect的识别结果就仅供参考，但BIOS的配置菜单不会骗人。虽然SuperIO提供的众多功能单元，但是硬件上引出有效连线不会很多，把SuperIO利用起来都要经过一些手动测试。在内核中加入一款SuperIO的支持并不困难，只要参考相似型号的已有代码，基于[hwmon][12]做一些配置修改的琐碎工作，所以这部分内核代码最近都没什么人改动。
+
+### PCH
+
+从英特尔推出酷睿处理器开始，内存控制器集成到了CPU内部，主板中就没有了北桥这一说，PCH就继承了南桥的功能。按以往南桥连接低速总线的说法也是相对的，PCH也提供了多路PCIe，千兆网卡的高速连接能力。intel PCH与CPU之间通信是通过一种类PCI的DMI高速总线，PCH支持的系统监控能力比SuperIO更加丰富，所以和CPU之间还有额外的许多中断线连接。受限于DMI总线的带宽，PCH必须在其提供的各种高速总线接入功能（PCIe，USB，GbE，SATA）中做出取舍，这部分控制结构称之为HSIO（Flexible IO）。反映到PC主板上，如果把所有的SATA接口插满的话，通过PCH桥接的PCIe口就没法用了。PCH所提供的低速接口和SuperIO区别不大，但是控制上多数是基于PCI总线，也就是需要从PCI配置空间获取BAR，然后才可以操作具体的寄存器，具体参考intel提供的datasheet。
+
+### SMbus/I2C
+
+SMBus是intel基于I2C协议新增网络层控制层而推出的一种总线协议，虽然在虽然在物理层面也有一些区别，但是SMBus是完全兼容I2C的软件框架的。SMBus一般只出现在intel x86的机器上（CPU，PCH或者SuperIO带有SMBus控制器），而国产化平台上则换成了I2C，无歧义的情况下这里统称I2C。I2C可以连接一些低速外围部件，例如EEPROM、GPIO扩展板、继电器，常留给下游厂商或者部门做一些产线的区分和个性化定制（俗话说科技以换壳为本）。I2C作为最常用的总线协议之一，内核是提供了标准的ioctl接口和调试工具i2c-tools，所以基于已有内核驱动控制I2C设备相对简单，intel x86平台的SMBus控制器也可以通过IO端口控制。在一些的系统上，每个I2C设备驱动加载的顺序不是固定的，导致/dev目录的命名可能在启动后会变动。但是控制器的编号是固定的。所以要通过sysfs定位定位到对应的控制器。在设备带有多个网卡插槽的情况下，I2C控制器通过一个I2C Mux连接到多张网卡的EEPROM。I2C Mux一般提供了控制地址和转发地址，读写定路由地址可以控制I2C Mux选路，读写路由地址则相当于直接与选通的末端网卡通信。另外，由于一个I2C控制是可能连接到多个设备，或者作为接口提供服务的情况下，内部需要做好访问互斥控制，不然可能会导致一些难以排查的bug。
 
 [1]: https://wiki.osdev.org/Acpi "PCI - OSDev Wiki"
 
 [2]: https://www.kernel.org/doc/html/latest/PCI/sysfs-pci.html "Accessing PCI device resources through sysfs"
+
+[3]: https://mp.weixin.qq.com/s/ulSSIRiOFGPeY6s7_kHuNg "一文梳理PCIe技术原理"
+
+[4]: https://stackoverflow.com/questions/6852332/how-does-cpu-communicate-with-peripherals "How does cpu communicate with peripherals? - Stack Overflow"
+
+[5]: https://wiki.osdev.org/PCI_Express#Enhanced_Configuration_Mechanism "PCI Express"
+
+[6]: https://web.archive.org/web/20210415014544/https://www.coreboot.org/Developer_Manual/Super_IO "Developer Manual/Super IO - coreboot"
+
+[7]: https://en.wikipedia.org/wiki/Super_I/O "Super I/O - Wikipedia"
+
+[8]: https://www.man7.org/linux/man-pages/man8/setpci.8.html "setpci(8) -Linux manual page"
+
+[9]: http://www.armadeus.org/wiki/index.php?title=Pci_debug "Pci debug -ArmadeusWiki"
+
+[10]: https://people.redhat.com/rjones/ioport/ "ioport - direct access to I/O ports from the command line"
+
+[11]: https://github.com/lm-sensors/lm-sensors "github: lm-sensors"
+
+[12]: https://www.kernel.org/doc/html/latest/hwmon/hwmon-kernel-api.html "The Linux Hardware Monitoring Kernel API"

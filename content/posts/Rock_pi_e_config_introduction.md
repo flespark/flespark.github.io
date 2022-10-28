@@ -18,7 +18,7 @@ tags: ["config", "linux"]
 | GND(pin 6) | <---> | Black wire |
 
 信号的稳定起见这里也连接了地线，如下图：
-![image.png](https://gitee.com/flespark/open-pixel-blocks/raw/master/icon/20210604150904.jpg)
+![wire_connetion.png](/static/images/20210604150904.jpg)
 我这里使用的充电宝供电，接串口线GND供电可能存在漏电流无法PD协议无法识别，所以要先上电再连接串口线。先在设备管理器中确认串口号，可能需要安装USB转TTL驱动，我使用putty提供的命令行工具plink.exe的连接串口：
 
 ```bash

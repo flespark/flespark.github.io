@@ -1,5 +1,5 @@
 ---
-title: "Rock_Pi_E_config_introduction"
+title: "Rock Pi E设置自动连接WIFI方便ssh调试"
 date: 2021-06-04T14:56:34+08:00
 draft: false
 categories: ["development"]

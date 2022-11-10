@@ -19,12 +19,12 @@ tags: ["config", "linux"]
 
 信号的稳定起见这里也连接了地线，如下图：
 ![wire_connetion.png](/images/20210604150904.jpg)
-我这里使用的充电宝供电，接串口线GND供电可能存在漏电流无法PD协议无法识别，所以要先上电再连接串口线。先在设备管理器中确认串口号，可能需要安装USB转TTL驱动，我使用putty提供的命令行工具plink.exe的连接串口：
+我这里使用的充电宝供电，接串口线GND供电可能存在漏电流PD协议无法识别，所以要先上电再连接串口线。先在设备管理器中确认串口号，可能需要安装USB转TTL驱动，我使用putty提供的命令行工具plink.exe的连接串口：
 
 ```bash
 plink.exe -serial com5 -sercfg 1500000,8,1,n,N
 ```
-系统启动后首先要做的是连接WIFI，Debian镜像自带了nmcli用于管理网络连接，我在Stackoverflow可以找到使用nmcli连接隐藏WIFI的方法：
+系统启动后首先要做的是连接WIFI，Debian镜像自带了nmcli用于管理网络连接，在Stackoverflow可以找到使用nmcli连接隐藏WIFI的方法：
 ```bash
 # 首先检查设备状态
 nmcli device

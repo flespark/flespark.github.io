@@ -760,19 +760,22 @@ IOS目前使用较多的代理软件是shadowrocket，支持trojan-go，内置�
    ```
    
    完成了以上设置，所有通过LAN口连接到软路由的设备都能自动获取ip并且科学上网。因为AX210的驱动还有点问题，WIFI AP的我没法测试，我最初追求WIFI 6E入手的这张网卡一直没有利用起来。其实如果改为单臂路由的形式话，利用已有的无线路由器，就不需要软路由具有AP的能力，也就可以随便选一个只有一个网口的开发板或者旧电子设备代替软路由，这里再挖一个坑。另外由于trojan-go透明代理实现tproxy的限制，只开一个工作在透明代理模式下的客户端软路自身是无法科学上网的
+   
+   **PS**: 软路由同时安装docker会导致tproxy代理失效，`sysctl -w net.bridge.bridge-nf-call-iptables=0`回退docker对内核参数的修改可回避此问题
 
 ###	参考：
 
-1. [Network configuration - ArchWiki (archlinux.org)](https://wiki.archlinux.org/title/Network_configuration#Change_interface_name)
-2. [翻墙 - DNS污染的原理以及应对策略 - DEV Community 👩‍💻👨‍💻](https://dev.to/metalage303/fan-qiang-dnswu-ran-de-yuan-li-yi-ji-ying-dui-ce-lue-3em)
-3. [透明代理 | 新 V2Ray 白话文指南 (v2fly.org)](https://guide.v2fly.org/app/transparent_proxy.html#设置步骤)
-4. [Netplan](https://netplan.io/reference#dhcp-overrides)
-5. [Network bridge - ArchWiki (archlinux.org)](https://wiki.archlinux.org/title/network_bridge)
-6. [dnsmasq - Debian Wiki](https://wiki.debian.org/dnsmasq)
-7. [dnscrypt-proxy - ArchWiki (archlinux.org)](https://wiki.archlinux.org/title/Dnscrypt-proxy)
-8. [Linux Kernel Documentation / networking / tproxy.txt (mjmwired.net)](https://mjmwired.net/kernel/Documentation/networking/tproxy.txt)
-9. [Linux TPROXY - 浮云可记得拜 - 博客园 (cnblogs.com)](https://www.cnblogs.com/gailtang/p/11200388.html)
-10. [IPTables: Fun with MARK « bits | andy smith's blog](https://andys.org.uk/bits/2010/01/27/iptables-fun-with-mark/comment-page-1/)
-11. [4.8. Routing Tables (linux-ip.net)](http://linux-ip.net/html/routing-tables.html)
-12. [树莓派 + V2Ray 配置透明网关 - YFDou](https://www.yfdou.com/archives/raspberrypi-v2ray-tproxy-gateway.html)
+1. [Setup Cloudflare CDN protected Trojan-Go with Docker on Ubuntu 20.04 (thematrix.dev)](https://thematrix.dev/setup-cloudflare-cdn-protected-trojan-go-using-docker-on-ubuntu-20-04/)
+2. [Network configuration - ArchWiki (archlinux.org)](https://wiki.archlinux.org/title/Network_configuration#Change_interface_name)
+3. [翻墙 - DNS污染的原理以及应对策略 - DEV Community 👩‍💻👨‍💻](https://dev.to/metalage303/fan-qiang-dnswu-ran-de-yuan-li-yi-ji-ying-dui-ce-lue-3em)
+4. [透明代理 | 新 V2Ray 白话文指南 (v2fly.org)](https://guide.v2fly.org/app/transparent_proxy.html#设置步骤)
+5. [Netplan](https://netplan.io/reference#dhcp-overrides)
+6. [Network bridge - ArchWiki (archlinux.org)](https://wiki.archlinux.org/title/network_bridge)
+7. [dnsmasq - Debian Wiki](https://wiki.debian.org/dnsmasq)
+8. [dnscrypt-proxy - ArchWiki (archlinux.org)](https://wiki.archlinux.org/title/Dnscrypt-proxy)
+9. [Linux Kernel Documentation / networking / tproxy.txt (mjmwired.net)](https://mjmwired.net/kernel/Documentation/networking/tproxy.txt)
+10. [Linux TPROXY - 浮云可记得拜 - 博客园 (cnblogs.com)](https://www.cnblogs.com/gailtang/p/11200388.html)
+11. [IPTables: Fun with MARK « bits | andy smith's blog](https://andys.org.uk/bits/2010/01/27/iptables-fun-with-mark/comment-page-1/)
+12. [4.8. Routing Tables (linux-ip.net)](http://linux-ip.net/html/routing-tables.html)
+13. [树莓派 + V2Ray 配置透明网关 - YFDou](https://www.yfdou.com/archives/raspberrypi-v2ray-tproxy-gateway.html)
 

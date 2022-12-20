@@ -1,7 +1,7 @@
 ---
 title: "Clion With Cubemx"
 date: 2022-12-17T21:41:44+08:00
-draft: true
+draft: false
 ---
 
 ###	配置Clion用于STM32开发

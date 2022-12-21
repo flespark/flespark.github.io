@@ -758,10 +758,48 @@ IOS目前使用较多的代理软件是shadowrocket，支持trojan-go，内置�
    $ ip route l table 100
    $ ip rule l fwmark 1
    ```
+
+5. 同时也把gfwlist配置的更新添加为定时服务：
+
+   ```sh
+   $ cat <<'EOF' >/usr/lib/systemd/system/update-dnsmasq-rule.service
+   [Unit]
+   Description=Update dnsmasq rule of gfwlist
+   Wants=update-dnsmasq-rule.timer
+   After=network.target network-online.target systemd-networkd.service NetworkManager.service
    
+   [Service]
+   Type=oneshot
+   ExecStartPre=/bin/rm -f /etc/dnsmasq.d/.gfwlist.conf
+   ExecStart=/usr/bin/gfwlist2dnsmasq.sh -p 1053 -s gfwlist -o /etc/dnsmasq.d/.gfwlist.conf
+   ExecStartPost=/bin/mv -f /etc/dnsmasq.d/.gfwlist.conf /etc/dnsmasq.d/gfwlist.conf && /usr/bin/systemctl restart dnsmasq
+   EOF
+   
+   $ cat <<'EOF' >/usr/lib/systemd/system/update-dnsmasq-rule.timer
+   [Unit]
+   Description=Weekly update dnsmasq rule of gfwlist
+   Requires=dnsmasq.service
+   
+   [Timer]
+   Unit=update-dnsmasq-rule.service
+   OnCalendar=Weekly
+   Persistent=true
+   
+   [Install]
+   WantedBy=timer.target
+   EOF
+   
+   $ systemctl enable update-dnsmasq-rule.service update-dnsmasq-rule.timer
+   $ systemctl start update-dnsmasq-rule.timer
+   ```
+
+   
+
    完成了以上设置，所有通过LAN口连接到软路由的设备都能自动获取ip并且科学上网。因为AX210的驱动还有点问题，WIFI AP的我没法测试，我最初追求WIFI 6E入手的这张网卡一直没有利用起来。其实如果改为单臂路由的形式话，利用已有的无线路由器，就不需要软路由具有AP的能力，也就可以随便选一个只有一个网口的开发板或者旧电子设备代替软路由，这里再挖一个坑。另外由于trojan-go透明代理实现tproxy的限制，只开一个工作在透明代理模式下的客户端软路自身是无法科学上网的
-   
-   **PS**: 软路由同时安装docker会导致tproxy代理失效，`sysctl -w net.bridge.bridge-nf-call-iptables=0`回退docker对内核参数的修改可回避此问题
+
+   **PS: **软路由同时安装docker会导致tproxy代理失效，`sysctl -w net.bridge.bridge-nf-call-iptables=0`回退docker对内核参数的修改可回避此问题
+
+   **PPS：**实际2个月体验下虽然非常稳定，但是极少数网站还是会出现打不开或者加载不完整的情况，但是电脑打开qv2ray代理重试，就能够正常加载，因为qv2ray设置的仅对大陆网站直连。本以为是这些网站服务器的IP被墙了，但是关掉qv2ray的代理后，又可以正常加载。具体原因有待进一步分析
 
 ###	参考：
 

@@ -1,10 +1,8 @@
 ---
-title: "Clion With Cubemx"
+title: "配置Clion用于STM32开发"
 date: 2022-12-17T21:41:44+08:00
 draft: false
 ---
-
-###	配置Clion用于STM32开发
 
 参考稚辉君的分享：[配置CLion用于STM32开发【优雅の嵌入式开发】 - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/145801160)，同时有如下改进和注意事项：
 
@@ -16,7 +14,7 @@ draft: false
 
 4. 可以从STM32官网下载芯片的svd(System view description)文件，在Clion中配置好方便调试。
 
-5. 在代码中使用任何的libc接口，例如printf将会在链接时引入专为bare-metal嵌入式系统设计的[newlib](https://sourceware.org/newlib/libc.html)库，默认使用的[gcc specs文件](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html)使用的静态库文件对于中低端MCU而言依然体积过大，所以在CMakeLists.txt中修改编译使用的specs文件：
+5. 在代码中使用任何的libc接口，例如printf将会在链接时引入专为bare-metal嵌入式系统设计的[newlib](https://sourceware.org/newlib/libc.html)库，默认的[gcc specs文件](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html)使用的静态库文件对于中低端MCU而言依然体积过大，所以在CMakeLists.txt中添加编译选项使用arm进一步精简nano.specs：
    ```cmake
    add_link_options(--specs=nano.specs)
    ```
@@ -24,3 +22,10 @@ draft: false
    可以大幅减少生成固件的体积。
 
    
+
+**ref:**
+
+- [嵌入式 - 【指南】如何在CLion下配置STM32开发环境 - 个人文章 - SegmentFault 思否](https://segmentfault.com/a/1190000022798805)
+- [The Newlib Embedded C Standard Library And How To Use It | Hackaday](https://hackaday.com/2021/07/19/the-newlib-embedded-c-standard-library-and-how-to-use-it/)
+- [Shrink Your MCU code size with GCC ARM Embedded 4.7 - Embedded blog - Arm Community blogs - Arm Community](https://community.arm.com/arm-community-blogs/b/embedded-blog/posts/shrink-your-mcu-code-size-with-gcc-arm-embedded-4-7)
+- [团队机器人系列（三）：微风四轴飞行器-STM32嵌入式开发-开发环境搭建 | myyerrol的个人网站](https://myyerrol.xyz/zh-cn/2017/11/07/team_robots_3_breeze_quadcopter_stm32_development/)

@@ -6,5 +6,7 @@ defaultContentLanguage = "cn"
 summaryLength = 200
 hasCJKLanguage = true
 theme = "ananke"
-disableLiveReload = true
+#disableLiveReload = true
 
+[params]
+custom_css = ["css/custom.css"]

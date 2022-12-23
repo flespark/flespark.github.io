@@ -14,7 +14,7 @@ draft: false
 
 4. 可以从STM32官网下载芯片的svd(System view description)文件，在Clion中配置好方便调试。
 
-5. 在代码中使用任何的libc接口，例如printf将会在链接时引入专为bare-metal嵌入式系统设计的[newlib](https://sourceware.org/newlib/libc.html)库，默认的[gcc specs文件](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html)使用的静态库文件对于中低端MCU而言依然体积过大，所以在CMakeLists.txt中添加编译选项使用arm进一步精简nano.specs：
+5. 在代码中使用任何的libc接口，例如printf将会在链接时引入专为bare-metal嵌入式系统设计的[newlib](https://sourceware.org/newlib/libc.html)库，默认的[gcc specs文件](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html)使用的静态库文件对于中低端MCU而言依然体积过大，所以在 CMakeLists_template.txt中添加编译选项使用arm进一步精简nano.specs：
    ```cmake
    add_link_options(--specs=nano.specs)
    ```
